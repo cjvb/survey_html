@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Values Survey</title>
+</head>
+<body>
+    <h1>Personal Values Survey</h1>
+    <div id="survey-container">
+        <div id="question-container">
+            <h2 id="question-text"></h2>
+            <div id="options-container"></div>
+            <button id="next-btn" onclick="nextQuestion()" disabled>Next</button>
+        </div>
+        <div id="results-container" style="display: none;">
+            <h2>Your Most Important Values</h2>
+            <div id="results"></div>
+            <button onclick="restartSurvey()">Take Survey Again</button>
+        </div>
+    </div>
+
+    <script>
+        const values = {
+            achievement: 'Achievement',
+            adventure: 'Adventure',
+            authenticity: 'Authenticity',
+            authority: 'Authority',
+            autonomy: 'Autonomy',
+            balance: 'Balance',
+            beauty: 'Beauty',
+            challenge: 'Challenge',
+            community: 'Community',
+            compassion: 'Compassion',
+            creativity: 'Creativity',
+            curiosity: 'Curiosity',
+            excellence: 'Excellence',
+            faith: 'Faith',
+            family: 'Family',
+            freedom: 'Freedom',
+            friendship: 'Friendship',
+            growth: 'Growth',
+            health: 'Health',
+            honesty: 'Honesty',
+            justice: 'Justice',
+            knowledge: 'Knowledge',
+            leadership: 'Leadership',
+            love: 'Love',
+            loyalty: 'Loyalty',
+            nature: 'Nature',
+            peace: 'Peace',
+            recognition: 'Recognition',
+            security: 'Security',
+            service: 'Service',
+            spirituality: 'Spirituality',
+            stability: 'Stability',
+            success: 'Success',
+            tradition: 'Tradition',
+            wealth: 'Wealth'
+        };
+
+        const questions = [
+            {
+                text: "What motivates you most in your daily life?",
+                options: [
+                    { text: "Making a difference in others' lives", values: ['service', 'compassion'] },
+                    { text: "Achieving personal goals", values: ['achievement', 'success'] },
+                    { text: "Learning new things", values: ['knowledge', 'curiosity'] },
+                    { text: "Building meaningful relationships", values: ['friendship', 'love'] }
+                ]
+            },
+            {
+                text: "How do you prefer to spend your free time?",
+                options: [
+                    { text: "With family and close friends", values: ['family', 'friendship'] },
+                    { text: "Pursuing hobbies and interests", values: ['creativity', 'curiosity'] },
+                    { text: "Outdoors in nature", values: ['nature', 'adventure'] },
+                    { text: "Working on personal projects", values: ['achievement', 'autonomy'] }
+                ]
+            },
+            {
+                text: "What do you value most in a workplace?",
+                options: [
+                    { text: "Job security and stability", values: ['security', 'stability'] },
+                    { text: "Creative freedom and flexibility", values: ['creativity', 'autonomy'] },
+                    { text: "Strong team collaboration", values: ['community', 'friendship'] },
+                    { text: "Opportunities for advancement", values: ['achievement', 'recognition'] }
+                ]
+            },
+            {
+                text: "When making important decisions, you prioritize:",
+                options: [
+                    { text: "What feels right to you personally", values: ['authenticity', 'autonomy'] },
+                    { text: "What benefits your family", values: ['family', 'loyalty'] },
+                    { text: "What is morally correct", values: ['honesty', 'justice'] },
+                    { text: "What leads to the best outcome", values: ['excellence', 'success'] }
+                ]
+            },
+            {
+                text: "What type of legacy do you want to leave?",
+                options: [
+                    { text: "Having helped many people", values: ['service', 'compassion'] },
+                    { text: "Creating something beautiful or meaningful", values: ['creativity', 'beauty'] },
+                    { text: "Building a strong family", values: ['family', 'tradition'] },
+                    { text: "Achieving great success", values: ['achievement', 'recognition'] }
+                ]
+            },
+            {
+                text: "What brings you the most satisfaction?",
+                options: [
+                    { text: "Overcoming challenges", values: ['challenge', 'growth'] },
+                    { text: "Finding inner peace", values: ['peace', 'spirituality'] },
+                    { text: "Being recognized for your efforts", values: ['recognition', 'achievement'] },
+                    { text: "Staying true to yourself", values: ['authenticity', 'honesty'] }
+                ]
+            },
+            {
+                text: "How do you define success?",
+                options: [
+                    { text: "Financial security and wealth", values: ['wealth', 'security'] },
+                    { text: "Personal growth and learning", values: ['growth', 'knowledge'] },
+                    { text: "Strong relationships and love", values: ['love', 'friendship'] },
+                    { text: "Making a positive impact", values: ['service', 'justice'] }
+                ]
+            },
+            {
+                text: "What drives your career choices?",
+                options: [
+                    { text: "Passion and personal interest", values: ['authenticity', 'curiosity'] },
+                    { text: "Opportunity to lead others", values: ['leadership', 'authority'] },
+                    { text: "Helping others or society", values: ['service', 'compassion'] },
+                    { text: "Financial rewards", values: ['wealth', 'success'] }
+                ]
+            },
+            {
+                text: "In times of conflict, you value:",
+                options: [
+                    { text: "Finding a peaceful resolution", values: ['peace', 'compassion'] },
+                    { text: "Standing up for what's right", values: ['justice', 'honesty'] },
+                    { text: "Maintaining loyalty to friends", values: ['loyalty', 'friendship'] },
+                    { text: "Protecting your own interests", values: ['security', 'autonomy'] }
+                ]
+            },
+            {
+                text: "What role does spirituality or faith play in your life?",
+                options: [
+                    { text: "It's central to who I am", values: ['faith', 'spirituality'] },
+                    { text: "It provides some guidance", values: ['spirituality', 'tradition'] },
+                    { text: "I find meaning in other ways", values: ['authenticity', 'curiosity'] },
+                    { text: "It's not important to me", values: ['autonomy', 'knowledge'] }
+                ]
+            },
+            {
+                text: "How important is it to you to be seen as successful?",
+                options: [
+                    { text: "Very important", values: ['recognition', 'success'] },
+                    { text: "Somewhat important", values: ['achievement', 'excellence'] },
+                    { text: "Not very important", values: ['authenticity', 'peace'] },
+                    { text: "I don't care about others' opinions", values: ['autonomy', 'authenticity'] }
+                ]
+            },
+            {
+                text: "What do you do when you have extra money?",
+                options: [
+                    { text: "Save it for security", values: ['security', 'stability'] },
+                    { text: "Spend it on experiences", values: ['adventure', 'growth'] },
+                    { text: "Give to charity or help others", values: ['service', 'compassion'] },
+                    { text: "Invest it to make more", values: ['wealth', 'success'] }
+                ]
+            },
+            {
+                text: "What type of environment do you thrive in?",
+                options: [
+                    { text: "Structured and predictable", values: ['stability', 'security'] },
+                    { text: "Dynamic and challenging", values: ['challenge', 'adventure'] },
+                    { text: "Collaborative and supportive", values: ['community', 'friendship'] },
+                    { text: "Independent and flexible", values: ['autonomy', 'freedom'] }
+                ]
+            },
+            {
+                text: "How do you prefer to learn new things?",
+                options: [
+                    { text: "Through hands-on experience", values: ['adventure', 'growth'] },
+                    { text: "By reading and research", values: ['knowledge', 'curiosity'] },
+                    { text: "From mentors and teachers", values: ['community', 'tradition'] },
+                    { text: "Through trial and error", values: ['autonomy', 'challenge'] }
+                ]
+            },
+            {
+                text: "What matters most in your relationships?",
+                options: [
+                    { text: "Trust and honesty", values: ['honesty', 'loyalty'] },
+                    { text: "Mutual support and care", values: ['love', 'compassion'] },
+                    { text: "Shared interests and fun", values: ['friendship', 'adventure'] },
+                    { text: "Respect for independence", values: ['autonomy', 'freedom'] }
+                ]
+            },
+            {
+                text: "How do you handle stress?",
+                options: [
+                    { text: "Seek support from others", values: ['community', 'friendship'] },
+                    { text: "Find time for solitude", values: ['peace', 'balance'] },
+                    { text: "Focus on solving the problem", values: ['challenge', 'excellence'] },
+                    { text: "Engage in physical activity", values: ['health', 'nature'] }
+                ]
+            },
+            {
+                text: "What do you admire most in others?",
+                options: [
+                    { text: "Their achievements and success", values: ['achievement', 'excellence'] },
+                    { text: "Their kindness and compassion", values: ['compassion', 'service'] },
+                    { text: "Their authenticity and honesty", values: ['authenticity', 'honesty'] },
+                    { text: "Their creativity and originality", values: ['creativity', 'beauty'] }
+                ]
+            },
+            {
+                text: "How important is maintaining traditions?",
+                options: [
+                    { text: "Very important - they connect us to our roots", values: ['tradition', 'family'] },
+                    { text: "Somewhat important - some are worth keeping", values: ['stability', 'community'] },
+                    { text: "Not very important - progress is more valuable", values: ['growth', 'curiosity'] },
+                    { text: "Unimportant - I prefer creating new ways", values: ['creativity', 'autonomy'] }
+                ]
+            },
+            {
+                text: "What role should leadership play in your life?",
+                options: [
+                    { text: "I want to lead and influence others", values: ['leadership', 'authority'] },
+                    { text: "I prefer to lead by example", values: ['authenticity', 'service'] },
+                    { text: "I'm comfortable following good leaders", values: ['community', 'loyalty'] },
+                    { text: "I prefer to work independently", values: ['autonomy', 'freedom'] }
+                ]
+            },
+            {
+                text: "What gives your life the most meaning?",
+                options: [
+                    { text: "Contributing to something greater than myself", values: ['service', 'spirituality'] },
+                    { text: "Continuous learning and growth", values: ['growth', 'knowledge'] },
+                    { text: "Building and nurturing relationships", values: ['love', 'family'] },
+                    { text: "Expressing my true self", values: ['authenticity', 'creativity'] }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let responses = [];
+        let valueScores = {};
+
+        // Initialize value scores
+        Object.keys(values).forEach(value => {
+            valueScores[value] = 0;
+        });
+
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('question-text').textContent = `${currentQuestion + 1}. ${question.text}`;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const label = document.createElement('label');
+                label.innerHTML = `
+                    <input type="radio" name="answer" value="${index}" onchange="enableNext()">
+                    ${option.text}
+                `;
+                optionsContainer.appendChild(label);
+                optionsContainer.appendChild(document.createElement('br'));
+            });
+            
+            document.getElementById('next-btn').disabled = true;
+        }
+
+        function enableNext() {
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        function nextQuestion() {
+            const selectedOption = document.querySelector('input[name="answer"]:checked');
+            if (!selectedOption) return;
+            
+            const optionIndex = parseInt(selectedOption.value);
+            const question = questions[currentQuestion];
+            const selectedAnswer = question.options[optionIndex];
+            
+            responses.push(selectedAnswer);
+            
+            // Add scores for selected values
+            selectedAnswer.values.forEach(value => {
+                valueScores[value] += 1;
+            });
+            
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('question-container').style.display = 'none';
+            document.getElementById('results-container').style.display = 'block';
+            
+            // Sort values by score
+            const sortedValues = Object.entries(valueScores)
+                .sort(([,a], [,b]) => b - a)
+                .filter(([,score]) => score > 0);
+            
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h3>Your Top Values (ranked by importance):</h3>';
+            
+            sortedValues.forEach(([value, score], index) => {
+                const valueDiv = document.createElement('div');
+                valueDiv.innerHTML = `<strong>${index + 1}. ${values[value]}</strong> (mentioned ${score} times)`;
+                resultsDiv.appendChild(valueDiv);
+            });
+            
+            if (sortedValues.length > 0) {
+                resultsDiv.innerHTML += '<br><p>These values appeared most frequently in your responses and likely represent what matters most to you in life.</p>';
+            }
+        }
+
+        function restartSurvey() {
+            currentQuestion = 0;
+            responses = [];
+            Object.keys(values).forEach(value => {
+                valueScores[value] = 0;
+            });
+            
+            document.getElementById('question-container').style.display = 'block';
+            document.getElementById('results-container').style.display = 'none';
+            
+            showQuestion();
+        }
+
+        // Start the survey
+        showQuestion();
+    </script>
+</body>
+</html>
